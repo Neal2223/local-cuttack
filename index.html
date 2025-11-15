@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Bowls - Order Online (Cuttack)</title>
+    <script src="https://cdn-tailwindcss.vercel.app/"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            /* Add padding-bottom to prevent content from being hidden by the sticky footer */
+            padding-bottom: 120px;
+            min-height: 100vh;
+        }
+
+        /* Quick Filter Styles (scrollbar only) */
+        #quick-filters {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        #quick-filters::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- 
+      HEADER: Hyperlocal Action Bar
+      This is no longer a marketing header. It's a utility bar.
+      It confirms the location and provides search.
+    -->
+    <header class="sticky top-0 bg-white shadow-sm z-10 p-4">
+        <div class="container mx-auto max-w-6xl">
+            <div class="flex justify-between items-center mb-3">
+                <h1 class="text-2xl font-bold text-rose-600 flex items-center gap-2">
+                    <img src="https://placehold.co/40x40/e11d48/ffffff?text=B" alt="The Bowls logo" width="40" height="40" class="h-10 w-10 rounded-lg shadow-sm" />
+                    The Bowls
+                </h1>
+                <!-- Location control (replaces search) -->
+                <div class="relative">
+                    <button id="location-control" class="location-control" type="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="pin" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.5-7.5 11.5s-7.5-4.358-7.5-11.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+                        </span>
+                        <span class="label-wrap text-left">
+                            <span class="label">Delivering to</span>
+                            <span id="location-value" class="value">Cuttack College Chhaka</span>
+                        </span>
+                        <span class="chev" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9l3.75 3.75L15.75 9"/></svg>
+                        </span>
+                    </button>
+                    <div id="location-popover" class="location-popover" role="dialog" aria-modal="false" aria-labelledby="loc-head">
+                        <div class="head">
+                            <h4 id="loc-head" class="text-sm font-semibold text-slate-800">Update delivery location</h4>
+                            <button id="loc-close" class="p-1.5 rounded-md hover:bg-slate-100" aria-label="Close">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-600"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                        <div class="content">
+                            <div class="field">
+                                <span class="icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75V21a.75.75 0 0 0 .75.75H9.75V15A2.25 2.25 0 0 1 12 12.75v0A2.25 2.25 0 0 1 14.25 15v6.75H18.75A.75.75 0 0 0 19.5 21V9.75"/></svg>
+                                </span>
+                                <input id="location-input" type="text" placeholder="Type a nearby landmark (e.g., Ravenshaw University Gate)" />
+                            </div>
+                            <div class="actions">
+                                <button id="use-current" class="location-btn secondary" type="button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v3m0 12v3m9-9h-3M6 12H3m13.5 0a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg>
+                                    Use current
+                                </button>
+                                <button id="save-location" class="location-btn" type="button">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </header>
+
+    <!-- Promo strip: highlights offers and hyperlocal window -->
+    <div class="bg-rose-50 border-y border-rose-100 py-2">
+        <div class="container mx-auto max-w-6xl px-4 flex items-center justify-between text-sm text-rose-800">
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center bg-white border border-rose-100 rounded-full px-3 py-1">10% OFF Thalis</span>
+                <span class="inline-flex items-center bg-white border border-rose-100 rounded-full px-3 py-1">Free delivery ≥ ₹199</span>
+                <span class="inline-flex items-center bg-white border border-rose-100 rounded-full px-3 py-1">Order till 10:00 PM</span>
+            </div>
+            <div class="hidden sm:flex items-center gap-2 text-rose-700">
+                <span class="inline-flex items-center px-2 py-1 rounded bg-rose-100 text-xs">Within 10 km</span>
+                <span class="inline-flex items-center px-2 py-1 rounded bg-green-100 text-xs text-green-700">ETA 25–35 min</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promo slider with Delivery/Pickup CTAs -->
+    <section class="bg-white border-b border-gray-100">
+        <div class="container mx-auto max-w-6xl px-4 py-4">
+            <div class="relative rounded-xl overflow-hidden">
+                <div id="promo-slides" class="w-full h-36 sm:h-44 md:h-56 relative">
+                    <div class="absolute inset-0 bg-[url('https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Indian_Food.jpg/1200px-Indian_Food.jpg')] bg-cover bg-center"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-black/10"></div>
+                    <div class="absolute inset-0 p-4 sm:p-6 flex flex-col justify-between">
+                        <div class="text-white">
+                            <p class="text-xs uppercase tracking-widest opacity-90">Cuttack • Within 10 km</p>
+                            <h3 class="text-xl sm:text-2xl font-extrabold">Fresh Bowls, Faster</h3>
+                            <p class="text-sm opacity-90">Exclusive offers for nearby orders</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="mode-delivery" class="order-mode-btn bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow">Delivery</button>
+                            <button id="mode-pickup" class="order-mode-btn bg-white/90 hover:bg-white text-gray-900 text-sm font-semibold px-4 py-2 rounded-lg shadow">Pickup</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Simple slide dots (static for now) -->
+                <div class="absolute bottom-2 right-3 flex gap-1.5">
+                    <span class="h-1.5 w-4 rounded-full bg-white/80"></span>
+                    <span class="h-1.5 w-1.5 rounded-full bg-white/50"></span>
+                    <span class="h-1.5 w-1.5 rounded-full bg-white/50"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 
+      QUICK FILTERS: POS-Style Navigation
+      This is the primary navigation for the menu.
+    -->
+    <nav class="sticky top-[120px] bg-white z-10 py-3 shadow-sm border-b border-gray-100">
+        <div id="quick-filters" class="container mx-auto max-w-6xl flex items-center gap-3 overflow-x-auto px-4">
+            <!-- Chips and Filter buttons will be dynamically inserted here -->
+        </div>
+    </nav>
+
+    <!-- 
+      MAIN CONTENT: Unified Menu Grid
+      A single grid is much faster and more "POS-like" than separate sections.
+    -->
+    <main class="container mx-auto max-w-6xl p-4">
+        <h2 id="menu-title" class="text-2xl font-bold text-gray-900">All Items</h2>
+        <p id="menu-subtitle" class="text-sm text-gray-600 mt-1 mb-4">Delivering within 10 km • ETA 25–35 min • Filter: All</p>
+        
+        <!-- 
+          Unified Menu Grid
+          Using grid-cols-2 is optimal for a POS-style touch interface on mobile.
+        -->
+        <div id="menu-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <!-- Loading State -->
+            <p class="loading-text col-span-full text-center text-gray-500 text-lg">Loading menu...</p>
+        </div>
+    </main>
+
+    <!-- Sticky Cart Footer -->
+    <div id="cart-footer" class="fixed bottom-0 left-0 w-full bg-gradient-to-r from-rose-600 to-rose-700 shadow-2xl p-4 transition-all duration-300 translate-y-full border-t border-rose-500">
+        <div class="container mx-auto max-w-6xl flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                </div>
+                <div class="text-white">
+                    <p id="cart-item-count" class="font-bold text-sm">0 Items</p>
+                    <p id="cart-total-price" class="text-sm opacity-90">₹0</p>
+                </div>
+            </div>
+            <button id="view-cart-btn" class="bg-white text-rose-600 font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
+                <span>View Cart</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Cart Drawer & Overlay -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300 z-30"></div>
+    <aside id="cart-drawer" class="fixed right-0 top-0 h-full w-full sm:w-[420px] bg-white shadow-2xl translate-x-full transition-transform duration-300 z-40 flex flex-col">
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-lg bg-rose-600 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-white"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l3-7H6.4M7 13L5.4 5M7 13l-2 7m0 0h12m-12 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm12 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z"/></svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Your Cart</h3>
+            </div>
+            <button id="cart-close" class="p-2 rounded-md hover:bg-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-gray-700"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-4 space-y-3">
+            <!-- Cart items rendered here -->
+        </div>
+        <div class="border-t border-gray-200 p-4 space-y-3">
+            <div class="flex items-center justify-between text-gray-700">
+                <span class="font-medium">Subtotal</span>
+                <span id="cart-subtotal" class="font-semibold">₹0</span>
+            </div>
+            <button class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3 rounded-lg shadow">Proceed to Checkout</button>
+        </div>
+    </aside>
+
+
+    <script>
+        // --- STATE MANAGEMENT ---
+        // This holds the master list of all items from the "API"
+        let allFoodItems = [];
+        // This holds the state of our shopping cart, e.g., { 1: 2, 5: 1 }
+        const cart = {};
+        // This holds the currently selected filter, e.g., "All", "Veg", "Thali"
+        let activeFilter = 'All';
+        let orderMode = 'Delivery'; // Delivery | Pickup
+
+        // --- MOCK API DATA ---
+        // Simulating a network call to get all food items.
+        // I've added a 'category' to each item for filtering.
+        function fetchFoodData() {
+            const foodData = [
+                // Veg Thali
+                { id: 1, name: 'Mas Veg Thali', price: 80, oldPrice: 89, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Vegetarian_Thali_from_India.jpg/640px-Vegetarian_Thali_from_India.jpg', isVeg: true, tag: '10% OFF', rating: 4.1, category: 'Thali', modes: ['Delivery','Pickup'] },
+                { id: 2, name: 'Paneer Thali', price: 100, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Indian_Thali.jpg/640px-Indian_Thali.jpg', isVeg: true, rating: 4.5, category: 'Thali', modes: ['Delivery','Pickup'] },
+                { id: 3, name: 'Mushroom Thali', price: 90, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Mushroom_masala.jpg/640px-Mushroom_masala.jpg', isVeg: true, rating: 4.0, category: 'Thali', modes: ['Delivery','Pickup'] },
+                { id: 4, name: 'Dal Chawal Gharta', price: 70, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Indian_daal_and_rice.jpg/640px-Indian_daal_and_rice.jpg', isVeg: true, rating: 4.2, category: 'Sides', modes: ['Delivery','Pickup'] },
+                // Non-Veg Thali
+                { id: 5, name: 'Chicken Thali', price: 122, oldPrice: 140, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Chicken_thali.jpg/640px-Chicken_thali.jpg', isVeg: false, tag: '10% OFF', rating: 4.6, category: 'Thali', modes: ['Delivery','Pickup'] },
+                { id: 6, name: 'Fish Thali', price: 115, oldPrice: 130, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Fish_thali.jpg/640px-Fish_thali.jpg', isVeg: false, tag: '10% OFF', rating: 4.3, category: 'Thali', modes: ['Delivery'] },
+                { id: 7, name: 'Egg Thali', price: 100, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Egg_curry_and_rice.jpg/640px-Egg_curry_and_rice.jpg', isVeg: false, rating: 4.0, category: 'Thali', modes: ['Delivery','Pickup'] },
+                { id: 8, name: 'Mutton Thali', price: 150, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Mutton_curry_with_rice.jpg/640px-Mutton_curry_with_rice.jpg', isVeg: false, tag: '10% OFF', rating: 4.4, category: 'Thali', modes: ['Pickup'] },
+                // Menu Items
+                { id: 9, name: 'Rice', price: 40, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Cooked_Rice.jpg/640px-Cooked_Rice.jpg', isVeg: true, tag: '10% OFF', rating: 3.8, category: 'Sides', modes: ['Delivery','Pickup'] },
+                { id: 10, name: 'Dal', price: 60, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Dal_Tadka.jpg/640px-Dal_Tadka.jpg', isVeg: true, tag: '10% OFF', rating: 4.1, category: 'Curry', modes: ['Delivery','Pickup'] },
+                { id: 11, name: 'Dal Fry', price: 70, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Dal_Fry.jpg/640px-Dal_Fry.jpg', isVeg: true, tag: '10% OFF', rating: 4.3, category: 'Curry', modes: ['Delivery','Pickup'] },
+                { id: 12, name: 'Kadai Paneer', price: 110, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Kadai_Paneer.jpg/640px-Kadai_Paneer.jpg', isVeg: true, tag: '10% OFF', rating: 4.5, category: 'Curry', modes: ['Delivery','Pickup'] },
+                { id: 13, name: 'Chilli Curry', price: 80, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Kadai_Veg.jpg/640px-Kadai_Veg.jpg', isVeg: true, rating: 4.0, category: 'Curry', modes: ['Delivery','Pickup'] },
+                { id: 14, name: 'Chicken Curry', price: 130, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Chicken_curry_in_the_village.jpg/640px-Chicken_curry_in_the_village.jpg', isVeg: false, rating: 4.4, category: 'Curry', modes: ['Delivery','Pickup'] },
+                { id: 15, name: 'Mix Veg', price: 90, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Mixed_vegetable_curry_with_rice.jpg/640px-Mixed_vegetable_curry_with_rice.jpg', isVeg: true, rating: 3.9, category: 'Curry', modes: ['Delivery','Pickup'] },
+                { id: 16, name: 'Mushroom Masala', price: 120, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Mushroom_Masala.jpg/640px-Mushroom_Masala.jpg', isVeg: true, rating: 4.2, category: 'Curry', modes: ['Delivery','Pickup'] },
+                { id: 17, name: 'Butter Chicken', price: 150, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Chicken_makhani.jpg/640px-Chicken_makhani.jpg', isVeg: false, rating: 4.7, category: 'Curry', modes: ['Delivery'] },
+                { id: 18, name: 'Butter Paneer', price: 140, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Paneer_butter_masala.jpg/640px-Paneer_butter_masala.jpg', isVeg: true, tag: '10% OFF', rating: 4.6, category: 'Curry', modes: ['Delivery','Pickup'] },
+                { id: 19, name: 'Chilli Paneer', price: 130, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Chilli_paneer_dish.jpg/640px-Chilli_paneer_dish.jpg', isVeg: true, tag: '10% OFF', rating: 4.4, category: 'Curry', modes: ['Delivery','Pickup'] },
+                { id: 20, name: 'Chilli Chicken', price: 140, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Chilli_chicken_%28dry%29.jpg/640px-Chilli_chicken_%28dry%29.jpg', isVeg: false, rating: 4.5, category: 'Curry', modes: ['Delivery','Pickup'] },
+            ];
+
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve(foodData);
+                }, 1000); // Simulate 1-second network delay
+            });
+        }
+
+        // --- DOM ELEMENTS ---
+        const menuContainer = document.getElementById('menu-container');
+        const quickFiltersContainer = document.getElementById('quick-filters');
+        const menuTitle = document.getElementById('menu-title');
+        const cartFooter = document.getElementById('cart-footer');
+        const cartItemCount = document.getElementById('cart-item-count');
+        const cartTotalPrice = document.getElementById('cart-total-price');
+        const cartOverlay = document.getElementById('cart-overlay');
+        const cartDrawer = document.getElementById('cart-drawer');
+        const viewCartBtn = document.getElementById('view-cart-btn');
+        const cartItemsEl = document.getElementById('cart-items');
+        const cartSubtotalEl = document.getElementById('cart-subtotal');
+        const cartCloseBtn = document.getElementById('cart-close');
+        
+        // --- RENDER FUNCTIONS ---
+        
+        /**
+         * Creates the HTML for a single food card.
+         */
+        function createFoodCard(item) {
+            const quantity = cart[item.id] || 0;
+            
+            const addButtonHtml = `
+                <button class="add-button w-20 py-2 px-4 text-center bg-rose-600 text-white font-semibold rounded-lg shadow-md hover:bg-rose-700 hover:shadow-lg text-sm transition-all duration-200" data-id="${item.id}">
+                    ADD
+                </button>
+            `;
+            
+            const counterHtml = `
+                <div class="item-counter w-20 flex items-center justify-between py-2 px-2.5 bg-rose-600 text-white font-semibold rounded-lg shadow-md text-sm">
+                    <button class="counter-btn decrease-item w-7 h-7 flex items-center justify-center text-sm font-bold rounded-full bg-white/20 hover:bg-white/30 transition-colors duration-200" data-id="${item.id}">-</button>
+                    <span class="font-bold">${quantity}</span>
+                    <button class="counter-btn increase-item w-7 h-7 flex items-center justify-center text-sm font-bold rounded-full bg-white/20 hover:bg-white/30 transition-colors duration-200" data-id="${item.id}">+</button>
+                </div>
+            `;
+            
+            // This is the new, professional veg/non-veg symbol
+            const vegIconHtml = item.isVeg 
+                ? `<div class="w-4 h-4 rounded-sm border border-green-600 flex items-center justify-center p-0.5" title="Veg">
+                       <div class="w-2 h-2 rounded-full bg-green-600"></div>
+                   </div>`
+                : `<div class="w-4 h-4 rounded-sm border border-red-600 flex items-center justify-center p-0.5" title="Non-Veg">
+                       <div class="w-2 h-2 rounded-full bg-red-600"></div>
+                   </div>`;
+
+            return `
+                <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col border border-gray-100 hover:border-gray-200 hover:-translate-y-0.5">
+                    <!-- Image and Discount Ribbon -->
+                    <div class="relative">
+                        <img src="${item.img}" alt="${item.name}" class="w-full h-40 md:h-48 object-cover" loading="lazy" width="400" height="300"
+                             onerror="this.src='https://placehold.co/400x300/E5E7EB/9CA3AF?text=Image+Missing'">
+                        ${item.tag ? `
+                            <div class="absolute top-3 left-3 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+                                ${item.tag}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="p-4 flex flex-col flex-grow">
+                        <!-- Name -->
+                        <h3 class="text-base font-semibold text-gray-900 mb-2 line-clamp-2" title="${item.name}">${item.name}</h3>
+                        
+                        <!-- Meta: rating, veg, category -->
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-md flex items-center border border-green-200">
+                                ${item.rating.toFixed(1)} <span class="ml-1">★</span>
+                            </span>
+                            <div class="flex items-center gap-2">
+                                ${vegIconHtml}
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 border border-gray-200 text-gray-700">${item.category}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Price + action -->
+                        <div class="flex justify-between items-center mt-auto pt-3 border-t border-gray-100">
+                            <div>
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-lg font-extrabold text-gray-900">₹${item.price}</span>
+                                    ${item.oldPrice ? `<span class=\"text-sm text-gray-400 line-through\">₹${item.oldPrice}</span>` : ''}
+                                </div>
+                                <p class="text-[11px] text-gray-500 -mt-0.5">per plate</p>
+                            </div>
+                            <div id="card-btn-${item.id}">
+                                ${quantity > 0 ? counterHtml : addButtonHtml}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        /**
+         * Renders the quick filter buttons based on the food data.
+         */
+        function renderQuickFilters() {
+            // Get all unique categories from the food items
+            const categories = [...new Set(allFoodItems.map(item => item.category))];
+            
+            // Define the full list of filters
+            const filters = ['All', 'Veg', 'Non-Veg', ...categories];
+            
+            const FILTER_BASE = 'filter-btn flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all duration-200 border border-transparent';
+            const FILTER_ACTIVE = 'bg-rose-600 text-white shadow-md border-rose-700 hover:bg-rose-700';
+            let filterHtml = '';
+            filters.forEach(filter => {
+                const isActive = filter === activeFilter;
+                filterHtml += `
+                    <button class="${FILTER_BASE} ${isActive ? FILTER_ACTIVE : ''}" data-filter="${filter}">
+                        ${filter}
+                    </button>
+                `;
+            });
+            
+            const chipsHtml = `
+                <span class="flex-shrink-0 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200">Within 10 km</span>
+                <span class="flex-shrink-0 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">ETA 25–35 min</span>
+                <span class="flex-shrink-0 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">Free delivery ≥ ₹199</span>
+                <span class="mx-2 h-6 w-px bg-gray-200"></span>
+            `;
+            quickFiltersContainer.innerHTML = chipsHtml + filterHtml;
+            
+            // Add event listeners to the new buttons
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', handleFilterClick);
+            });
+        }
+
+        function renderFilterSkeletons() {
+            const skeletonBtn = '<span class="animate-pulse flex-shrink-0 h-8 w-20 rounded-full bg-gray-200"></span>';
+            quickFiltersContainer.innerHTML = `
+                <span class="animate-pulse flex-shrink-0 h-7 w-24 rounded-full bg-rose-100"></span>
+                <span class="animate-pulse flex-shrink-0 h-7 w-28 rounded-full bg-green-100"></span>
+                <span class="animate-pulse flex-shrink-0 h-7 w-36 rounded-full bg-amber-100"></span>
+                <span class="mx-2 h-6 w-px bg-gray-200"></span>
+                ${skeletonBtn.repeat(5)}
+            `;
+        }
+
+        function renderMenuSkeletons(count = 8) {
+            const card = `
+            <div class="bg-white rounded-lg overflow-hidden shadow-md">
+                <div class="h-36 md:h-44 bg-gray-200 animate-pulse"></div>
+                <div class="p-4 space-y-3">
+                    <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                    <div class="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                    <div class="h-8 bg-gray-200 rounded w-full animate-pulse"></div>
+                </div>
+            </div>`;
+            menuContainer.innerHTML = Array.from({length: count}).map(() => card).join('');
+        }
+        
+        /**
+         * Renders the menu based on the current active filter.
+         */
+        function renderMenu() {
+            let filteredItems = [];
+            
+            // Apply the active filter
+            if (activeFilter === 'All') {
+                filteredItems = allFoodItems;
+                menuTitle.textContent = 'All Items';
+            } else if (activeFilter === 'Veg') {
+                filteredItems = allFoodItems.filter(item => item.isVeg);
+                menuTitle.textContent = 'Veg Items';
+            } else if (activeFilter === 'Non-Veg') {
+                filteredItems = allFoodItems.filter(item => !item.isVeg);
+                menuTitle.textContent = 'Non-Veg Items';
+            } else {
+                // It's a category filter
+                filteredItems = allFoodItems.filter(item => item.category === activeFilter);
+                menuTitle.textContent = activeFilter;
+            }
+            
+            // Subtitle context
+            const subtitleEl = document.getElementById('menu-subtitle');
+            if (subtitleEl) {
+                subtitleEl.textContent = `Delivering within 10 km • ETA 25–35 min • Mode: ${orderMode} • Filter: ${menuTitle.textContent}`;
+            }
+
+            // Apply order mode filter
+            filteredItems = filteredItems.filter(item => !item.modes || item.modes.includes(orderMode));
+
+            // Generate and render the HTML
+            if (filteredItems.length === 0) {
+                menuContainer.innerHTML = `<p class="col-span-full text-center text-gray-500">No items found for "${activeFilter}".</p>`;
+            } else {
+                menuContainer.innerHTML = filteredItems.map(createFoodCard).join('');
+            }
+            
+            // Re-add event listeners for the new buttons
+            addCardButtonListeners();
+        }
+        
+        /**
+         * Updates the sticky cart footer.
+         */
+        function updateCartFooter() {
+            let totalItems = 0;
+            let totalPrice = 0;
+            
+            for (const id in cart) {
+                const quantity = cart[id];
+                if (quantity > 0) {
+                    const item = allFoodItems.find(i => i.id == id);
+                    if (item) {
+                        totalItems += quantity;
+                        totalPrice += item.price * quantity;
+                    }
+                }
+            }
+            
+            if (totalItems > 0) {
+                cartItemCount.textContent = `${totalItems} ${totalItems > 1 ? 'Items' : 'Item'}`;
+                cartTotalPrice.textContent = `₹${totalPrice}`;
+                cartFooter.classList.add('translate-y-0');
+            } else {
+                cartFooter.classList.remove('translate-y-0');
+            }
+        }
+
+        function openCartDrawer() {
+            cartOverlay.classList.remove('pointer-events-none');
+            cartOverlay.classList.add('opacity-100');
+            cartDrawer.classList.remove('translate-x-full');
+        }
+
+        function closeCartDrawer() {
+            cartOverlay.classList.add('pointer-events-none');
+            cartOverlay.classList.remove('opacity-100');
+            cartDrawer.classList.add('translate-x-full');
+        }
+
+        function updateCartDrawer() {
+            let subtotal = 0;
+            const entries = Object.entries(cart).filter(([, q]) => q > 0);
+            if (entries.length === 0) {
+                cartItemsEl.innerHTML = `
+                    <div class="text-center text-gray-500 py-12">
+                        <div class="mx-auto mb-3 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' class='w-6 h-6 text-gray-400'><path stroke-linecap='round' stroke-linejoin='round' d='M3 3h2l.4 2M7 13h10l3-7H6.4M7 13L5.4 5M7 13l-2 7m0 0h12m-12 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm12 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z'/></svg>
+                        </div>
+                        <p class="font-medium">Your cart is empty</p>
+                        <p class="text-sm">Add some tasty bowls to get started.</p>
+                    </div>`;
+                cartSubtotalEl.textContent = '₹0';
+                return;
+            }
+
+            const rows = entries.map(([id, q]) => {
+                const item = allFoodItems.find(i => i.id == id);
+                if (!item) return '';
+                const rowTotal = item.price * q;
+                subtotal += rowTotal;
+                return `
+                    <div class="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                        <div class="min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate">${item.name}</p>
+                            <p class="text-xs text-gray-500">₹${item.price} × ${q}</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="flex items-center bg-white rounded-lg border border-gray-200">
+                                <button class="decrease-item px-2 py-1 text-gray-700" data-id="${id}">−</button>
+                                <span class="px-2 text-sm font-semibold">${q}</span>
+                                <button class="increase-item px-2 py-1 text-gray-700" data-id="${id}">+</button>
+                            </div>
+                            <span class="text-sm font-semibold text-gray-900">₹${rowTotal}</span>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            cartItemsEl.innerHTML = rows;
+            cartSubtotalEl.textContent = `₹${subtotal}`;
+
+            // Bind +/- inside drawer
+            cartItemsEl.querySelectorAll('.increase-item').forEach(btn => btn.addEventListener('click', e => {
+                increaseItem(e.target.dataset.id);
+                updateCartDrawer();
+            }));
+            cartItemsEl.querySelectorAll('.decrease-item').forEach(btn => btn.addEventListener('click', e => {
+                decreaseItem(e.target.dataset.id);
+                updateCartDrawer();
+            }));
+        }
+        
+        // --- EVENT HANDLERS ---
+        
+        function handleFilterClick(event) {
+            // Set the new active filter
+            activeFilter = event.target.dataset.filter;
+            
+            // Update button active states using utility classes
+            const FILTER_ACTIVE = ['bg-rose-600','text-white','shadow-md','border-rose-700','hover:bg-rose-700'];
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove(...FILTER_ACTIVE);
+            });
+            event.target.classList.add(...FILTER_ACTIVE);
+            
+            // Re-render the menu
+            renderMenu();
+        }
+
+        // Order mode controls
+        function setOrderMode(mode) {
+            orderMode = mode;
+            const deliveryBtn = document.getElementById('mode-delivery');
+            const pickupBtn = document.getElementById('mode-pickup');
+            if (!deliveryBtn || !pickupBtn) return;
+            if (mode === 'Delivery') {
+                deliveryBtn.className = 'order-mode-btn bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow';
+                pickupBtn.className = 'order-mode-btn bg-white/90 hover:bg-white text-gray-900 text-sm font-semibold px-4 py-2 rounded-lg shadow';
+            } else {
+                pickupBtn.className = 'order-mode-btn bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow';
+                deliveryBtn.className = 'order-mode-btn bg-white/90 hover:bg-white text-gray-900 text-sm font-semibold px-4 py-2 rounded-lg shadow';
+            }
+            renderMenu();
+        }
+        
+        function addCardButtonListeners() {
+            document.querySelectorAll('.add-button').forEach(button => {
+                button.addEventListener('click', e => increaseItem(e.target.dataset.id));
+            });
+            document.querySelectorAll('.increase-item').forEach(button => {
+                button.addEventListener('click', e => increaseItem(e.target.dataset.id));
+            });
+            document.querySelectorAll('.decrease-item').forEach(button => {
+                button.addEventListener('click', e => decreaseItem(e.target.dataset.id));
+            });
+        }
+        
+        function increaseItem(id) {
+            cart[id] = (cart[id] || 0) + 1;
+            updateCardButton(id);
+            updateCartFooter();
+        }
+        
+        function decreaseItem(id) {
+            if (cart[id] > 0) {
+                cart[id] -= 1;
+            }
+            updateCardButton(id);
+            updateCartFooter();
+        }
+        
+        /**
+         * Updates a single card's button (ADD vs. counter)
+         */
+        function updateCardButton(id) {
+            const buttonContainer = document.getElementById(`card-btn-${id}`);
+            if (!buttonContainer) return;
+
+            const quantity = cart[id] || 0;
+            
+            if (quantity === 0) {
+                buttonContainer.innerHTML = `
+                    <button class="add-button w-20 py-2 px-4 text-center bg-rose-600 text-white font-semibold rounded-lg shadow-md hover:bg-rose-700 hover:shadow-lg text-sm transition-all duration-200" data-id="${id}">
+                        ADD
+                    </button>
+                `;
+                // Add listener to the new ADD button
+                buttonContainer.querySelector('.add-button').addEventListener('click', e => increaseItem(e.target.dataset.id));
+            } else {
+                buttonContainer.innerHTML = `
+                    <div class="item-counter w-20 flex items-center justify-between py-2 px-2.5 bg-rose-600 text-white font-semibold rounded-lg shadow-md text-sm">
+                        <button class="counter-btn decrease-item w-7 h-7 flex items-center justify-center text-sm font-bold rounded-full bg-white/20 hover:bg-white/30 transition-colors duration-200" data-id="${id}">-</button>
+                        <span class="font-bold">${quantity}</span>
+                        <button class="counter-btn increase-item w-7 h-7 flex items-center justify-center text-sm font-bold rounded-full bg-white/20 hover:bg-white/30 transition-colors duration-200" data-id="${id}">+</button>
+                    </div>
+                `;
+                // Add listeners to the new +/- buttons
+                buttonContainer.querySelector('.increase-item').addEventListener('click', e => increaseItem(e.target.dataset.id));
+                buttonContainer.querySelector('.decrease-item').addEventListener('click', e => decreaseItem(e.target.dataset.id));
+            }
+        }
+        
+        // --- INITIALIZATION ---
+        
+        /**
+         * The main function to initialize the app.
+         */
+        async function initializeApp() {
+            // 0. Skeletons
+            renderFilterSkeletons();
+            renderMenuSkeletons();
+
+            // 1. Fetch data from the "server"
+            allFoodItems = await fetchFoodData();
+            
+            // 2. Render the filters
+            renderQuickFilters();
+            
+            // 3. Render the initial menu (All)
+            renderMenu();
+            
+            // 4. Update the cart (initially hidden)
+            updateCartFooter();
+
+            // 5. Wire up cart drawer controls
+            if (viewCartBtn) viewCartBtn.addEventListener('click', () => { updateCartDrawer(); openCartDrawer(); });
+            if (cartCloseBtn) cartCloseBtn.addEventListener('click', closeCartDrawer);
+            if (cartOverlay) cartOverlay.addEventListener('click', closeCartDrawer);
+
+            // 6. Wire up order mode buttons
+            const modeDelivery = document.getElementById('mode-delivery');
+            const modePickup = document.getElementById('mode-pickup');
+            if (modeDelivery) modeDelivery.addEventListener('click', () => setOrderMode('Delivery'));
+            if (modePickup) modePickup.addEventListener('click', () => setOrderMode('Pickup'));
+        }
+        
+        // Start the app once the DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        // --- LOCATION CONTROL ---
+        (function initLocationControl(){
+            const control = document.getElementById('location-control');
+            const pop = document.getElementById('location-popover');
+            const input = document.getElementById('location-input');
+            const saveBtn = document.getElementById('save-location');
+            const useCurrentBtn = document.getElementById('use-current');
+            const closeBtn = document.getElementById('loc-close');
+            const headerLoc = document.getElementById('header-location');
+            const valueEl = document.getElementById('location-value');
+
+            if (!control || !pop) return;
+
+            // Restore saved location
+            const saved = localStorage.getItem('tb_location_label');
+            if (saved) {
+                valueEl.textContent = saved;
+                if (headerLoc) headerLoc.textContent = `📍 ${saved}`;
+            }
+
+            function openPop() {
+                pop.classList.add('show');
+                control.setAttribute('aria-expanded','true');
+                setTimeout(()=>input && input.focus({preventScroll:true}), 10);
+            }
+            function closePop() {
+                pop.classList.remove('show');
+                control.setAttribute('aria-expanded','false');
+            }
+            function togglePop() { pop.classList.contains('show') ? closePop() : openPop(); }
+
+            control.addEventListener('click', togglePop);
+            if (closeBtn) closeBtn.addEventListener('click', closePop);
+
+            // Outside click to close
+            document.addEventListener('click', (e)=>{
+                if (!pop.classList.contains('show')) return;
+                if (control.contains(e.target) || pop.contains(e.target)) return;
+                closePop();
+            });
+            // ESC to close
+            document.addEventListener('keydown', (e)=>{ if (e.key==='Escape') closePop(); });
+
+            // Save location
+            if (saveBtn) saveBtn.addEventListener('click', ()=>{
+                const label = (input?.value || '').trim();
+                if (!label) { closePop(); return; }
+                localStorage.setItem('tb_location_label', label);
+                valueEl.textContent = label;
+                if (headerLoc) headerLoc.textContent = `📍 ${label}`;
+                closePop();
+            });
+
+            // Use current location (reverse geocode stub)
+            if (useCurrentBtn) useCurrentBtn.addEventListener('click', ()=>{
+                if (!navigator.geolocation) {
+                    input.value = 'Cuttack College Chhaka';
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(()=>{
+                    // For demo, set a friendly label without calling APIs
+                    input.value = 'Cuttack College Chhaka';
+                }, ()=>{
+                    input.value = 'Cuttack College Chhaka';
+                }, { timeout: 5000 });
+            });
+        })();
+
+    </script>
+</body>
+</html>
