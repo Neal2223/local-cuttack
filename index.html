@@ -24,6 +24,10 @@
         #quick-filters::-webkit-scrollbar {
             display: none; /* Chrome, Safari, Opera */
         }
+        /* Hide cart footer for PetPooja integration */
+        #cart-footer {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -114,6 +118,7 @@
                         <div class="flex gap-2">
                             <button id="mode-delivery" class="order-mode-btn bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow">Delivery</button>
                             <button id="mode-pickup" class="order-mode-btn bg-white/90 hover:bg-white text-gray-900 text-sm font-semibold px-4 py-2 rounded-lg shadow">Pickup</button>
+                            <a href="https://dinein.petpooja.com/qr/" target="_blank" class="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow">Order Online</a>
                         </div>
                     </div>
                 </div>
@@ -275,9 +280,9 @@
             const quantity = cart[item.id] || 0;
             
             const addButtonHtml = `
-                <button class="add-button w-20 py-2 px-4 text-center bg-rose-600 text-white font-semibold rounded-lg shadow-md hover:bg-rose-700 hover:shadow-lg text-sm transition-all duration-200" data-id="${item.id}">
-                    ADD
-                </button>
+                <a href="https://dinein.petpooja.com/qr/" target="_blank" class="order-now-link w-20 py-2 px-4 text-center bg-rose-600 text-white font-semibold rounded-lg shadow-md hover:bg-rose-700 hover:shadow-lg text-sm transition-all duration-200 inline-block">
+                    Order Now
+                </a>
             `;
             
             const counterHtml = `
@@ -595,35 +600,15 @@
             updateCartFooter();
         }
         
-        /**
-         * Updates a single card's button (ADD vs. counter)
-         */
         function updateCardButton(id) {
             const buttonContainer = document.getElementById(`card-btn-${id}`);
             if (!buttonContainer) return;
 
-            const quantity = cart[id] || 0;
-            
-            if (quantity === 0) {
-                buttonContainer.innerHTML = `
-                    <button class="add-button w-20 py-2 px-4 text-center bg-rose-600 text-white font-semibold rounded-lg shadow-md hover:bg-rose-700 hover:shadow-lg text-sm transition-all duration-200" data-id="${id}">
-                        ADD
-                    </button>
-                `;
-                // Add listener to the new ADD button
-                buttonContainer.querySelector('.add-button').addEventListener('click', e => increaseItem(e.target.dataset.id));
-            } else {
-                buttonContainer.innerHTML = `
-                    <div class="item-counter w-20 flex items-center justify-between py-2 px-2.5 bg-rose-600 text-white font-semibold rounded-lg shadow-md text-sm">
-                        <button class="counter-btn decrease-item w-7 h-7 flex items-center justify-center text-sm font-bold rounded-full bg-white/20 hover:bg-white/30 transition-colors duration-200" data-id="${id}">-</button>
-                        <span class="font-bold">${quantity}</span>
-                        <button class="counter-btn increase-item w-7 h-7 flex items-center justify-center text-sm font-bold rounded-full bg-white/20 hover:bg-white/30 transition-colors duration-200" data-id="${id}">+</button>
-                    </div>
-                `;
-                // Add listeners to the new +/- buttons
-                buttonContainer.querySelector('.increase-item').addEventListener('click', e => increaseItem(e.target.dataset.id));
-                buttonContainer.querySelector('.decrease-item').addEventListener('click', e => decreaseItem(e.target.dataset.id));
-            }
+            buttonContainer.innerHTML = `
+                <a href="https://dinein.petpooja.com/qr/" target="_blank" class="order-now-link w-20 py-2 px-4 text-center bg-rose-600 text-white font-semibold rounded-lg shadow-md hover:bg-rose-700 hover:shadow-lg text-sm transition-all duration-200 inline-block">
+                    Order Now
+                </a>
+            `;
         }
         
         // --- INITIALIZATION ---
